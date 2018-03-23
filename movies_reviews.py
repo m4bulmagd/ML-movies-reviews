@@ -5,8 +5,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import GridSearchCV
 
-train_path = "aclImdb/train/"  # source data
-test_path = "aclImdb/test/"  # test data for grade evaluation.
+train_path = "aclImdb/train/"  # source data path
+test_path = "aclImdb/test/"  # test data path
 
 
 def txt_to_csv(path, name=""):
