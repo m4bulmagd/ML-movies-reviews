@@ -112,7 +112,7 @@ if __name__ == "__main__":
     print("Score: {}   //// for SGD with Param {} ".format(score * 100, best_param))
 
     ############################
-    print("\n vectorize the data uni gram . . . ")
+    print("\n vectorize the data 3-gram . . . ")
     three_vectorizer = unigram(Xtrain_text)
     Xtrain_uni = three_vectorizer.transform(Xtrain_text)
     Xtest_uni = three_vectorizer.transform(Xtest_text)
