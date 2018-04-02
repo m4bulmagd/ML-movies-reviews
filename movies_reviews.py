@@ -5,8 +5,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import GridSearchCV
 
-train_path = "aclImdb/train/"  # source data path
-test_path = "aclImdb/test/"  # test data path
+train_path = "aclImdb/train/"  # source data
+test_path = "aclImdb/test/"  # test data for grade evaluation.
 
 
 def txt_to_csv(path, name=""):
@@ -51,7 +51,27 @@ def stochastic_descent(Xtrain, Ytrain, Xtest, Ytest, param=[]):
     return predict_score, clf.best_params_
 
 
+def unigram(data):
+    from sklearn.feature_extraction.text import CountVectorizer
+    vectorizer = CountVectorizer()
+    vectorizer = vectorizer.fit(data)
+    return vectorizer
+
+
+def bigram(data):
+    from sklearn.feature_extraction.text import CountVectorizer
+    vectorizer = CountVectorizer(ngram_range=(1, 2))
+    vectorizer = vectorizer.fit(data)
+    return vectorizer
+
+def three_gram(data):
+    from sklearn.feature_extraction.text import CountVectorizer
+    vectorizer = CountVectorizer(ngram_range=(1, 3))
+    vectorizer = vectorizer.fit(data)
+    return vectorizer
+
 if __name__ == "__main__":
+
     txt_to_csv(path=train_path, name="imdb_train.csv")
     txt_to_csv(path=test_path, name="imdb_test.csv")
 
@@ -65,19 +85,38 @@ if __name__ == "__main__":
     Xtest_text = test_data['text']
     Ytest = test_data['rating']
 
-    # vectorize the data
-    print("vectorize the data . . . ")
-    vectorizer = CountVectorizer()
-    uni_vectorizer = vectorizer.fit(Xtrain_text)
-    Xtrain_uni = uni_vectorizer.transform(Xtrain_text)
-    Xtest_uni = uni_vectorizer.transform(Xtest_text)
-
-    # Applying the stochastic descent
-    print("Applying the stochastic descent ...")
     penalty = ['l1', 'elasticnet', 'l2']
     loss = ['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron', 'squared_loss', 'huber',
             'epsilon_insensitive', 'squared_epsilon_insensitive']
     param_l_p = {'penalty': penalty, 'loss': loss}
 
+    # vectorize the data uni
+    print("vectorize the data uni-gram . . . ")
+    uni_vectorizer = unigram(Xtrain_text)
+    Xtrain_uni = uni_vectorizer.transform(Xtrain_text)
+    Xtest_uni = uni_vectorizer.transform(Xtest_text)
+
+    print("Applying the stochastic descent ...")
+    score, best_param = stochastic_descent(Xtrain_uni, Ytrain, Xtest_uni, Ytest, param_l_p)
+    print("Score: {}   //// for SGD with Param {} ".format(score * 100, best_param))
+
+    #########################
+
+    print("\n vectorize the data Bi-gram . . . ")
+    bi_vectorizer = bigram(Xtrain_text)
+    Xtrain_uni = bi_vectorizer.transform(Xtrain_text)
+    Xtest_uni = bi_vectorizer.transform(Xtest_text)
+
+    print("Applying the stochastic descent ...")
+    score, best_param = stochastic_descent(Xtrain_uni, Ytrain, Xtest_uni, Ytest, param_l_p)
+    print("Score: {}   //// for SGD with Param {} ".format(score * 100, best_param))
+
+    ############################
+    print("\n vectorize the data uni gram . . . ")
+    three_vectorizer = unigram(Xtrain_text)
+    Xtrain_uni = three_vectorizer.transform(Xtrain_text)
+    Xtest_uni = three_vectorizer.transform(Xtest_text)
+
+    print("Applying the stochastic descent ...")
     score, best_param = stochastic_descent(Xtrain_uni, Ytrain, Xtest_uni, Ytest, param_l_p)
     print("Score: {}   //// for SGD with Param {} ".format(score * 100, best_param))
